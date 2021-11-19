@@ -1,16 +1,11 @@
-# web_service
-
-A new Flutter project.
-
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+Projeto da discplina de Desenvolvimento de Sistemas Móveis do tecnólogo de Análise e Desenvolvimento de Sistemas, trabalhando com Flutter e Web Service. A aplicação tem por objetivo fazer uma pesquisa de CEP com a possibilidade de compartilhar o endereço encontrado utilizando o plugin Share.
 
-A few resources to get you started if this is your first Flutter project:
+Principais características que deveriam ter na aplicação:
 
-- [Lab: Write your first Flutter app](https://flutter.dev/docs/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://flutter.dev/docs/cookbook)
+- Validações do CEP informado (Quantidade de caracteres e CEP inválido)
+- Utilização de Flushbar para exibir os alertas referente as validações 
+- Botão Share para compartilhar o endereço em outro ambiente
 
-For help getting started with Flutter, view our
-[online documentation](https://flutter.dev/docs), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+![App Busca CEP](https://user-images.githubusercontent.com/72532360/142691879-aa834a83-bdd0-4ffb-9d34-6866f4d913e4.png)
