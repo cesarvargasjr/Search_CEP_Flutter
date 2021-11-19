@@ -6,7 +6,7 @@ void main() {
     debugShowCheckedModeBanner: false,
     home: HomePage(),
     theme:
-        ThemeData(brightness: Brightness.light, primarySwatch: Colors.purple),
+        ThemeData(brightness: Brightness.light, primarySwatch: Colors.blueGrey),
     darkTheme: ThemeData(
       brightness: Brightness.dark,
     ),

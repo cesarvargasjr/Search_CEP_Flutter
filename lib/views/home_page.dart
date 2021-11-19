@@ -20,10 +20,11 @@ class _HomePageState extends State<HomePage> {
   // Declaração Bools
   bool _loading = false;
   bool _enableField = true;
+  bool _erro = true;
 
   // Declaração Strings
   String? _result;
-  String? status = 'Favor, informar o CEP.';
+  String? status = 'Por favor, informe o CEP.';
   String? cep = '';
   String? logradouro = '';
   String? complemento = '';
@@ -57,18 +58,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text('BUSCADOR DE ENDEREÇO'),
-        actions: <Widget>[
-          IconButton(
-            icon: const Icon(
-              Icons.share,
-              color: Colors.white,
-            ),
-            onPressed: () {
-              _share(context);
-            },
-          )
-        ],
+        title: Text('Busca de CEP'),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(20.0),
@@ -84,14 +74,14 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
-  // ************ WIDGETS DO PROJETO ******************************
+  // WIDGETS DO PROJETO
 
   Widget _buildSearchCepTextField() {
     return TextField(
       autofocus: true,
       keyboardType: TextInputType.number,
       textInputAction: TextInputAction.done,
-      decoration: InputDecoration(labelText: 'Informe o Cep'),
+      decoration: InputDecoration(labelText: 'Digite o Cep'),
       controller: _searchCepController,
       enabled: _enableField,
     );
@@ -99,19 +89,22 @@ class _HomePageState extends State<HomePage> {
 
   Widget _buildSearchCepButton() {
     return Padding(
-      padding: const EdgeInsets.only(top: 30.0),
+      padding: EdgeInsets.fromLTRB(60.0, 15.0, 60.0, 15.0),
       child: RaisedButton(
         onPressed: _searchCep,
+        color: Colors.green,
         child: _loading
             ? _circularLoading()
             : Text(
                 'Consultar',
                 style: TextStyle(
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white),
               ),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(5),
+        ),
       ),
     );
   }
@@ -135,10 +128,11 @@ class _HomePageState extends State<HomePage> {
           child: Row(
             // ignore: prefer_const_literals_to_create_immutables
             children: [
-              Icon(
-                Icons.gps_fixed_rounded,
-                color: Colors.purple,
-                size: 30,
+              IconButton(
+                icon: const Icon(Icons.share, color: Colors.green, size: 30),
+                onPressed: () {
+                  _share(context);
+                },
               ),
               SizedBox(
                 width: 10,
@@ -213,11 +207,6 @@ class _HomePageState extends State<HomePage> {
                 ],
               ),
               Spacer(),
-              //Icon(
-              //  Icons.arrow_forward_ios_outlined,
-              //  size: 15,
-              //  color: Colors.green,
-              //),
             ],
           ),
         ),
@@ -232,14 +221,16 @@ class _HomePageState extends State<HomePage> {
     // Validações
     if (cep.isEmpty || cep == '' || cep.length > 8 || cep.length < 8) {
       if (cep.length > 8 || cep.length < 8) {
+        _erro = true;
         titleSnackBar = 'Atenção!';
-        massageSnackBar = 'Quantidade de caracter incorreto.';
+        massageSnackBar = 'Quantidade de caracteres incorreto.';
         showTopSnackBar(context);
       }
 
       if (cep.isEmpty || cep == '') {
+        _erro = true;
         titleSnackBar = 'Atenção!';
-        massageSnackBar = 'Campo em branco. Favor, informe o CEP para busca.';
+        massageSnackBar = 'Digite o CEP para realizar a consultar.';
         showTopSnackBar(context);
       }
 
@@ -254,9 +245,7 @@ class _HomePageState extends State<HomePage> {
       gia = '';
       ddd = '';
       siafi = '';
-      //
     } else {
-      //
       _searching(true);
 
       final resultCep = await ViaCepService.fetchCep(cep: cep);
@@ -266,6 +255,7 @@ class _HomePageState extends State<HomePage> {
         // Valida retorno do JSON
 
         if (resultCep.cep == comparar) {
+          _erro = true;
           titleSnackBar = 'Atenção!';
           massageSnackBar = 'CEP inexistente!';
           showTopSnackBar(context);
@@ -282,6 +272,7 @@ class _HomePageState extends State<HomePage> {
           ddd = '';
           siafi = '';
         } else {
+          _erro = false;
           titleSnackBar = 'CEP válido!';
           massageSnackBar = 'Busca realizada com sucesso.';
           showTopSnackBar(context);
@@ -301,7 +292,6 @@ class _HomePageState extends State<HomePage> {
     }
 
     _searching(false);
-    //
   }
 
   void _searching(bool enable) {
@@ -320,34 +310,17 @@ class _HomePageState extends State<HomePage> {
           icon: Icon(
             Icons.error,
             size: 40,
-            color: Colors.purple,
+            color: Colors.red,
           ),
-
           shouldIconPulse: false,
           title: titleSnackBar,
           message: massageSnackBar,
-
-          /*****************************************
-          
-          Botton Link  com ação após Clik
-          
-            mainButton: FlatButton(
-              child: Text(
-                'Click Me',
-                style: TextStyle(color: Colors.purple, fontSize: 16),
-              ),
-              onPressed: () {},
-            ),
-
-          *******************************************/
-
           onTap: (_) {
             print('Clicked bar');
           },
           duration: Duration(seconds: 3),
           flushbarPosition: FlushbarPosition.TOP,
           margin: EdgeInsets.fromLTRB(8, kToolbarHeight + 8, 8, 0),
-          //borderRadius: 16,
         ),
       );
 
@@ -361,7 +334,12 @@ class _HomePageState extends State<HomePage> {
 
   void _share(BuildContext context) {
     dynamic cep;
-    if (_result != '') {
+
+    if (_erro == true) {
+      titleSnackBar = 'Atenção!';
+      massageSnackBar = 'Não é possível compartilhar um CEP inválido.';
+      showTopSnackBar(context);
+    } else if (_result != '') {
       cep = ResultCep.fromJson(_result!);
       Share.share(
         "cep: ${cep.cep}, Logradouro: ${cep.logradouro}, Complemento: ${cep.complemento},"
